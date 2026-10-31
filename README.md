@@ -340,10 +340,10 @@ The following functionality has been tested in the local application:
 | Knowledge-base retrieval | Tested |
 | Text-based customer support | Working |
 | Voice recording | Tested |
-| Gnani speech transcription | Working in local test |
-| Recognized speech displayed | Working |
-| Knowledge retrieval from voice transcription | Working |
-| Optional spoken response | Tested |
+| Gnani speech transcription | Implemented; intermittent API timeout (HTTP 504) |
+| Recognized speech displayed | Tested when STT succeeds |
+| Knowledge retrieval from voice transcription | Tested when STT succeeds |
+| Optional spoken response | Tested (REST-based TTS) |
 | Order lookup | Working |
 | Identity verification | Working |
 | Support ticket creation | Working |
