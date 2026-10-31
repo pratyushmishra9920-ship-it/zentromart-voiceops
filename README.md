@@ -1,122 +1,413 @@
-# Capstone practice dataset: ZentroMart customer support
+# ZentroMart VoiceOps
+### AI-Powered Customer Support Assistant with Voice Interaction, Knowledge-Base Retrieval, and Verified Order Management
 
-Everything here is synthetic. ZentroMart is a fictional Indian online store. No real customers, orders, phone numbers or recordings were used. Phone numbers use an unallocated prefix (+91 5…) and every email is on example.com.
+<p align="center">
+  <strong>A voice-enabled customer support system built using Python, Streamlit, and Gnani AI.</strong>
+</p>
 
-**Today's date for this dataset is 20 October 2026.** Use it for every deadline and delay calculation, not your computer's clock.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-blue?logo=python" />
+  <img src="https://img.shields.io/badge/Streamlit-Application-red?logo=streamlit" />
+  <img src="https://img.shields.io/badge/Gnani-AI%20Voice-purple" />
+  <img src="https://img.shields.io/badge/Knowledge%20Base-Markdown-green" />
+  <img src="https://img.shields.io/badge/Project-Capstone-orange" />
+</p>
 
-## What you're building with it
+---
 
-A support agent for ZentroMart that answers customers who write in by chat, email or support ticket. In Step 4 you add voice as a feature: customers can send a voice message, which your agent transcribes with Gnani STT over WebSocket, and your agent can reply with audio streamed from Gnani TTS. No prerecorded audio files are supplied. Record your own voice to test Gnani STT/TTS.
+## Overview
 
-## What's in the folder
+**ZentroMart VoiceOps** is an AI-powered customer support assistant developed for ZentroMart, a fictional Indian e-commerce company.
 
-Every data file is a CSV: 9 in total. The company documents are Markdown files, because they are written documents meant to be read and searched, and the tools are one Python file.
+The project explores how customer support workflows can be improved by combining voice interaction, knowledge-base retrieval, order verification, and automated support-ticket creation in a single application.
 
-| File | Contents | Used in |
-| --- | --- | --- |
-| `kb/*.md` | 21 company documents: policies, agent guides, help articles, FAQs (one in Hindi) and a marketing page | Steps 2 to 4 |
-| `data/products.csv` | 70 products with return category, price, seller and warranty | Steps 2 and 3 |
-| `data/customers.csv` | 300 fictional customers | Step 3, through the tools |
-| `data/orders.csv` | 1,000 orders, one row each: payment, delivery, returns, refunds and a timeline | Step 3 |
-| `data/order_items.csv` | What was bought in each order, one row per item, linked by `order_id` | Step 3 |
-| `data/pincodes.csv` | Where ZentroMart delivers, and where cash on delivery and Express are available | Steps 2 and 3 |
-| `data/holidays.csv` | The holidays that business-day counts skip | Steps 2 and 3 |
-| `data/support_logs.csv` | 244 past support chats and calls handled by human agents | Optional |
-| `practice/questions.csv` | 52 single questions with expected decisions, key facts, the document sections that answer them, and a speech-to-text version of each question | Steps 1, 2 and 4 |
-| `practice/conversations.csv` | 23 multi-turn support conversations (96 customer-message rows), one row per customer message, with the expected behaviour at every turn | Step 3 |
-| `tools/tools.py` | Two offline mock tools for identity-checked order lookup and ticket creation | Step 3 |
+Customers can communicate with the assistant through text or voice. The application transcribes recorded speech using Gnani Speech-to-Text (STT), retrieves relevant information from company knowledge-base documents, and presents supporting information to the customer. It also includes simulated order lookup with identity verification and a support-ticket handover mechanism.
 
-Field-by-field descriptions are in `DATA_DICTIONARY.md`.
+The project was developed as a practical capstone to understand how voice-enabled customer support systems can work with structured business data and unstructured company documentation.
 
-## Working with the CSV files
+**Live application:** Run locally using Streamlit.  
+**Source code:** [GitHub Repository](https://github.com/pratyushmishra9920-ship-it/zentromart-voiceops)
 
-- They open in Google Sheets or Excel, and in Python with `pandas.read_csv`. Use `dtype=str` so order IDs, pincodes and SKUs stay as text.
-- Some cells hold a short list. List items are separated by ` ; ` (space, semicolon, space).
-- In the `must_include` column, ` / ` separates alternatives: any one of them is enough.
-- Empty cells mean "not applicable", for example no return on that order.
+---
 
-## The mock tools (identity-checked)
+## Why I Built This Project
 
-`tools/tools.py` runs locally and reads the CSV files in `data/`. No real accounts or personal information are needed. **Order details are withheld until verification succeeds.** The tool cannot securely authenticate real customers: it only simulates the capstone's identity-checking flow, with synthetic data.
+Customer support systems often need to handle several different types of requests:
 
-```python
-from tools import lookup_order, create_ticket
+- Customers asking about returns, refunds, cancellations, and delivery.
+- Customers checking the status of their orders.
+- Customers communicating in Hindi, English, or Hinglish.
+- Customers who prefer speaking instead of typing.
+- Requests that require identity verification before sharing private order information.
+- Issues that cannot be resolved automatically and need human support.
 
-pending = lookup_order("8978 2837")
-# -> {"verification_required": True, ...}; no private order details
+I wanted to explore how these different workflows could be brought together in one application rather than building another basic chatbot that only responds to predefined questions.
 
-# Ask the caller for the last four digits of their registered phone
-# OR their delivery pincode. Never say the expected value aloud.
-order = lookup_order("8978 2837", verification_value="4533")
-assert order["found"] and order["verified"]
-# Only NOW use order["status"], order["items"], and order["total_inr"].
+My approach was to combine a structured synthetic e-commerce dataset with a document-based knowledge base, Python-based tools, and voice APIs.
 
-ticket = create_ticket(
-    summary="Verified caller reports a damaged TV on order 89782837; "
-            "human review is required under the damage policy.",
-    order_id="89782837", reason="high_value_damage",
-)
+The main objective was to build a demonstrable customer-support workflow while maintaining important safeguards around order information and escalation.
+
+---
+
+## Key Features
+
+### 1. Voice-Based Customer Support
+
+- Record customer messages directly through the application.
+- Convert recorded speech into text using Gnani STT.
+- Support English (India), Hindi, and Hinglish language selections.
+- Display the recognized speech.
+- Retrieve relevant knowledge-base information based on the transcription.
+- Generate optional spoken responses using Gnani Text-to-Speech (TTS).
+
+### 2. Knowledge-Base Retrieval
+
+- Searches company documents written in Markdown.
+- Uses TF-IDF-based text retrieval to identify relevant content.
+- Displays matching document sections and their section IDs.
+- Preserves source references to help explain where information came from.
+- Accounts for policy precedence and superseded documents.
+
+### 3. Order Lookup and Identity Verification
+
+- Uses locally stored synthetic order and customer data.
+- Requires a verification step before disclosing order details.
+- Supports verification using a registered phone suffix or delivery pincode.
+- Prevents disclosure of private order information when verification fails.
+
+### 4. Support Ticket Creation
+
+- Provides a simulated support-ticket handover workflow.
+- Records tickets locally.
+- Returns a ticket ID when ticket creation succeeds.
+- Supports escalation when an issue requires human review.
+
+### 5. Text-Based Customer Support
+
+- Allows customers to type questions directly.
+- Retrieves relevant company documentation.
+- Supports policy-related questions without requiring order verification.
+- Provides a fallback when a request requires human assistance.
+
+---
+
+## Application Architecture
+
+The application combines structured data, unstructured knowledge documents, local Python tools, and external voice APIs.
+
+```mermaid
+flowchart TD
+    A[Customer] --> B[Streamlit Interface]
+    B --> C{Input Type}
+    C -->|Text| D[Text Query]
+    C -->|Voice| E[Gnani Speech-to-Text]
+    E --> F[Transcribed Text]
+    D --> G[Support Processing]
+    F --> G
+    G --> H[Knowledge Base Retrieval]
+    H --> I[Markdown Documents]
+    G --> J[Order Verification Tool]
+    J --> K[Synthetic CSV Dataset]
+    G --> L[Ticket Creation Tool]
+    L --> M[Local Ticket Record]
+    H --> N[Relevant Source Excerpts]
+    N --> O[Customer Response]
+    O --> P[Optional Gnani Text-to-Speech]
 ```
 
-- `lookup_order(order_id)` returns a verification prompt only. It does **not** return order status, items, pincode, phone details, amount, or customer information.
-- `lookup_order(order_id, verification_value=...)` checks a **4-digit registered phone suffix** or **6-digit delivery pincode**, returning order details only on a match. Failed and unknown lookups do not disclose private data.
-- Ask for only one verification value at a time, allow at most one retry, and do not share order details if both attempts fail. This is a rule for your conversation agent; it does not impose a persistent rate limit inside the mock tool.
-- Keep verified order state in the current conversation only. Do not expose or repeat verification secrets in your response, logs, or handover summary.
-- `create_ticket` records a handover in `tools/tickets_created.csv` and returns a ticket ID. Only say a ticket was created if the tool returned `created=True`. This file is generated at runtime and is not supplied in the ZIP.
-- Practice conversations specify an unverified lookup when an order ID first appears and a verification lookup when the caller provides the phone suffix/pincode. See `practice/conversations.csv`.
+### Technology Stack
 
-## Things that make this realistic
+| Component | Technology |
+|---|---|
+| Programming language | Python |
+| User interface | Streamlit |
+| Data processing | Pandas |
+| Knowledge retrieval | Scikit-learn, TF-IDF |
+| Knowledge base | Markdown documents |
+| Voice transcription | Gnani Speech-to-Text |
+| Spoken responses | Gnani Text-to-Speech |
+| API communication | Requests |
+| Environment management | Python virtual environment |
+| Version control | Git and GitHub |
 
-Real support data is messy, and so is this. Build for it:
+---
 
-- **Documents disagree.** Policies, help articles, FAQs and a marketing page sometimes say different things. `kb/00_about_this_knowledge_base.md` says which one wins.
-- **Policies change over time.** Every document has a `status` and an `effective_from` date in its header. Some answers depend on when an order was placed or delivered.
-- **Customers don't use the documents' words.** People write "send it back" and "nobody came to collect it", while the documents say "reverse pickup". Keyword search alone will miss a lot.
-- **Some answers need two sources.** A policy plus a catalog row, or a policy plus an order record.
-- **Some questions have no answer** in the documents. The right reply says so and offers a human colleague.
-- **Customers write in Hindi or Hinglish**, and a few in other Indian languages, while most documents are in English.
-- **Timelines use business days**: Monday to Saturday, skipping the holidays in `data/holidays.csv`.
-- **Verify before you share.** The agent guide `agent_identity_verification.md` explains how.
-- **The support logs are not a source of truth.** They were written by human agents, and a few contain mistakes. Use them to learn how customers talk; answer from the documents.
+## Dataset and Knowledge Base
 
-## Section IDs
+One of the important parts of this project is the supplied **Capstone Project Dataset FTTT 2026**.
 
-Every section heading carries an ID in square brackets, such as `## [RET-2] Return windows by category`. Keep this ID with each chunk you index, and report the IDs your agent used. That's how retrieval is scored, so you're free to chunk however you like.
+Instead of using a small collection of hardcoded chatbot responses, I worked with a synthetic e-commerce dataset containing structured business records and company documentation.
 
-## ZIP schema — folder structure, table keys and usage
+Everything in the dataset is synthetic. ZentroMart is fictional, and no real customer records or recordings are used.
 
-The archive extracts directly into the following files and folders (no duplicate PDF or hidden macOS files):
+### Dataset Statistics
+
+| Dataset component | Records |
+|---|---:|
+| Customers | 300 |
+| Orders | 1,000 |
+| Order items | 1,783 |
+| Products | 70 |
+| Delivery pincodes | 36 |
+| Holidays | 4 |
+| Historical support logs | 244 |
+| Individual practice questions | 52 |
+| Multi-turn conversations | 23 |
+| Customer-message turns in conversations | 96 |
+| Knowledge-base documents | 21 |
+
+The dataset contains **9 CSV files in total**, including the practice datasets.
+
+### Knowledge Base
+
+The 21 Markdown documents include:
+
+- Company information and agent guidelines.
+- Identity verification instructions.
+- Escalation and handover procedures.
+- Return and refund policies.
+- Cancellation and delivery policies.
+- Warranty and troubleshooting information.
+- Frequently asked questions.
+- Hindi-language support material.
+- Marketing and membership information.
+
+An important challenge in this dataset is that different documents can contain conflicting information.
+
+For example, an older policy may have been superseded by a newer policy. The application therefore considers document relevance and the source-precedence rules rather than treating every matching document as equally authoritative.
+
+### Dataset Design and Integrity
+
+The dataset also contains relationships between customers, orders, order items, products, and delivery pincodes.
+
+The project uses the supplied mock tools for order lookup and ticket creation rather than directly exposing private fields from CSV records.
+
+A validation script checks:
+
+- CSV structure and required fields.
+- Primary and foreign-key relationships.
+- Order and item calculations.
+- Knowledge-base documents.
+- Practice evidence.
+- Verification gates.
+- Company naming consistency.
+
+**Validation result:** All 9 CSV files, 21 knowledge-base documents, relational checks, order calculations, practice evidence, verification gates, and company naming passed validation.
+
+Run the validator with:
+
+```bash
+python validate_dataset.py
+```
+
+---
+
+## Project Structure
 
 ```text
-Capstone_Project_Dataset_FTTT_2026/
-├── README.md                # Read first; project rules and usage
-├── DATA_DICTIONARY.md       # Every CSV field, type and meaning
-├── ZIP_SCHEMA.md            # Structure and relational schema overview
-├── CHANGELOG.md             # Changes from the supplied draft archive
-├── validate_dataset.py     # Offline, standard-library validation
-├── kb/                     # 21 Markdown knowledge documents
+zentromart-voiceops/
+│
+├── app.py
+├── validate_dataset.py
+├── requirements.txt
+│
+├── data/
+│   ├── customers.csv
+│   ├── holidays.csv
+│   ├── order_items.csv
+│   ├── orders.csv
+│   ├── pincodes.csv
+│   ├── products.csv
+│   └── support_logs.csv
+│
+├── kb/
 │   ├── 00_about_this_knowledge_base.md
-│   ├── agent_*.md           # Verification, conversation, escalation
-│   ├── pol_*.md             # Current + superseded policies
-│   ├── help_*.md, faq_*.md, mkt_*.md
-├── data/                   # 7 CSV data tables
-│   ├── customers.csv        # 300   PK: customer_id
-│   ├── orders.csv           # 1,000 PK: order_id; FK: customer_id
-│   ├── order_items.csv      # 1,783 PK: (order_id, line_no); FK: sku
-│   ├── products.csv         # 70    PK: sku
-│   ├── pincodes.csv         # 36    PK: pincode
-│   ├── holidays.csv         # 4     PK: date
-│   └── support_logs.csv     # 244   PK: log_id; references order/customer
-├── practice/               # Text-only practice; no supplied audio
-│   ├── questions.csv        # 52 individual questions
-│   └── conversations.csv    # 96 turns across 23 conversations
-└── tools/
-    ├── __init__.py
-    └── tools.py             # lookup_order and create_ticket
+│   ├── agent_conversation_style.md
+│   ├── agent_escalation_handoff.md
+│   ├── agent_identity_verification.md
+│   ├── faq_general.md
+│   ├── faq_hindi.md
+│   └── ...
+│
+├── practice/
+│   ├── questions.csv
+│   └── conversations.csv
+│
+├── tools/
+│   ├── __init__.py
+│   └── tools.py
+│
+├── README.md
+├── DATA_DICTIONARY.md
+├── ZIP_SCHEMA.md
+├── CHANGELOG.md
+└── .gitignore
 ```
 
-**Relational joins:** `customers.customer_id → orders.customer_id`, `orders.order_id → order_items.order_id`, `order_items.sku → products.sku`, and `orders.delivery_pincode → pincodes.pincode`. Customer pincodes also reference `pincodes.pincode`. The composite key for each order item is `(order_id, line_no)`. Join the logs by `order_id` and `customer_id` for optional analysis; do not treat them as policy authority.
+---
 
-**How to use:** Index `kb/*.md` for retrieval, retaining `[SECTION-ID]`, `status`, and `effective_from`. Use `data/*.csv` for factual lookups, `tools/` for simulated verified orders and escalations, and `practice/*.csv` for evaluation. Interpret time-dependent scenarios using **20 October 2026**, the fixed dataset reference date; exclude Sundays and listed holidays from business-day calculations. Run `python validate_dataset.py` from the extracted folder before starting.
+## Getting Started
 
-See `ZIP_SCHEMA.md` for a concise table of join keys and `DATA_DICTIONARY.md` for every field.
+### Prerequisites
+
+- Python 3.10 or later.
+- Git.
+- VS Code or another Python editor.
+- A Gnani API key with the required STT/TTS permissions for voice functionality.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/pratyushmishra9920-ship-it/zentromart-voiceops.git
+```
+
+```bash
+cd zentromart-voiceops
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env
+GNANI_API_KEY=your_gnani_api_key
+```
+
+Do not commit this file or share your API key publicly.
+
+### 5. Validate the dataset
+
+```bash
+python validate_dataset.py
+```
+
+### 6. Run the application
+
+```bash
+streamlit run app.py
+```
+
+Open the local application at:
+
+```text
+http://localhost:8501
+```
+
+---
+
+## Voice Integration
+
+Voice functionality is implemented using Gnani's Vachana APIs.
+
+The current application uses:
+
+- **Speech-to-Text:** Recorded customer audio is submitted to Gnani STT and converted into text.
+- **Text-to-Speech:** An optional spoken response can be generated using Gnani TTS.
+
+The voice workflow is integrated with the same support-processing and knowledge-retrieval flow used by text queries.
+
+The current implementation uses the documented REST API endpoints. The original capstone dataset describes a WebSocket-based STT and streamed TTS workflow, so the current REST implementation should be considered an implementation variation rather than a claim that the WebSocket requirement has been completed.
+
+Voice features require internet connectivity and valid API access. Text-based support and local dataset tools can be tested independently.
+
+---
+
+## Testing and Current Implementation Status
+
+The following functionality has been tested in the local application:
+
+| Feature | Status |
+|---|---|
+| Dataset validation | Passed |
+| Knowledge-base retrieval | Tested |
+| Text-based customer support | Working |
+| Voice recording | Tested |
+| Gnani speech transcription | Working in local test |
+| Recognized speech displayed | Working |
+| Knowledge retrieval from voice transcription | Working |
+| Optional spoken response | Tested |
+| Order lookup | Working |
+| Identity verification | Working |
+| Support ticket creation | Working |
+
+These results describe the local capstone demonstration. They do not represent production deployment or real customer authentication.
+
+---
+
+## Important Security and Project Limitations
+
+- ZentroMart and all supplied customer and order records are fictional.
+- Order lookup and identity verification use synthetic data and are not production-grade authentication.
+- Ticket creation is a local mock implementation, not a live company support system.
+- Knowledge retrieval displays relevant source excerpts; it should not be mistaken for a fully autonomous, production-grade AI reasoning system.
+- Voice functionality depends on Gnani API availability, internet connectivity, and API permissions.
+- API credentials must remain outside the public repository.
+- The application has not been validated for real customer traffic or production security requirements.
+
+---
+
+## What I Learned and Explored
+
+Through this project, I explored several practical aspects of building an integrated customer-support application:
+
+- Working with structured CSV datasets and relational data.
+- Understanding primary keys, foreign keys, and data validation.
+- Building a document-based knowledge retrieval system.
+- Using TF-IDF for text retrieval.
+- Integrating external Speech-to-Text and Text-to-Speech APIs.
+- Connecting voice input with an existing text-processing workflow.
+- Implementing verification gates before disclosing order information.
+- Designing a support escalation workflow.
+- Managing environment variables and API credentials.
+- Testing application components independently.
+- Using Git and GitHub to manage a complete project.
+
+Most importantly, this project helped me understand that building a useful support assistant involves more than connecting a language or voice API. It also requires reliable data, clear business policies, verification rules, source handling, and a controlled escalation process.
+
+---
+
+## Future Improvements
+
+Some areas I would like to explore further:
+
+- Implement the original WebSocket-based STT and streamed TTS workflow.
+- Improve retrieval using semantic embeddings and hybrid search.
+- Add a more structured response-generation layer with stronger source grounding.
+- Improve multilingual handling for Hindi and Hinglish.
+- Add analytics for support queries, ticket categories, and resolution patterns.
+- Integrate a persistent ticket database.
+- Deploy the application with secure secret management.
+- Evaluate retrieval quality using the supplied practice questions and conversations.
+
+---
+
+## Repository
+
+**Project:** ZentroMart VoiceOps  
+**Developer:** Pratyush Mishra  
+**GitHub:** [@pratyushmishra9920-ship-it](https://github.com/pratyushmishra9920-ship-it)  
+**Repository:** [zentromart-voiceops](https://github.com/pratyushmishra9920-ship-it/zentromart-voiceops)
+
+---
+
+<p align="center">
+  <strong>Built as a practical capstone project exploring voice-enabled customer support, knowledge retrieval, and secure business workflows.</strong>
+</p>
