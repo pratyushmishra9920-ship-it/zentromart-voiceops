@@ -22,6 +22,13 @@ DATA_DIR = ROOT / "data"
 DATASET_DATE = "20 October 2026"
 
 load_dotenv(ROOT / ".env")
+def get_gnani_api_key():
+    try:
+        key = st.secrets.get("GNANI_API_KEY", "")
+    except Exception:
+        key = ""
+
+    return str(key or os.getenv("GNANI_API_KEY", "")).strip()
 
 st.set_page_config(page_title="ZentroMart VoiceOps", page_icon="🎧", layout="wide")
 st.title("🎧 ZentroMart VoiceOps")
@@ -191,7 +198,7 @@ def respond(user_text: str) -> str:
 
 def gnani_transcribe(audio_bytes: bytes, language_code: str) -> str:
     """Transcribe one short recording using Gnani's REST STT endpoint."""
-    api_key = os.getenv("GNANI_API_KEY", "").strip()
+    api_key = get_gnani_api_key()
     if not api_key:
         raise RuntimeError("GNANI_API_KEY is missing from your .env file.")
     response = requests.post(
@@ -229,7 +236,7 @@ def gnani_transcribe(audio_bytes: bytes, language_code: str) -> str:
 
 def gnani_speak(text: str, language_code: str) -> bytes:
     """Generate one WAV response using Gnani's REST TTS endpoint."""
-    api_key = os.getenv("GNANI_API_KEY", "").strip()
+    api_key = get_gnani_api_key()
     if not api_key:
         raise RuntimeError("GNANI_API_KEY is missing from your .env file.")
     # Keep voice output short and remove Markdown syntax before sending it to TTS.
