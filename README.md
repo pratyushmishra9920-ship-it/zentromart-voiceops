@@ -1,4 +1,5 @@
 # ZentroMart VoiceOps
+
 ### AI-Powered Customer Support Assistant with Voice Interaction, Knowledge-Base Retrieval, and Verified Order Management
 
 <p align="center">
@@ -15,6 +16,14 @@
 
 ---
 
+## 🚀 Live Deployment
+
+**Live Application:** [ZentroMart VoiceOps – Open Application](https://zentromart-voiceops-dwd56au4q2qeqnexdeuaxx.streamlit.app/)
+
+**Source Code:** [GitHub Repository](https://github.com/pratyushmishra9920-ship-it/zentromart-voiceops)
+
+---
+
 ## Overview
 
 **ZentroMart VoiceOps** is an AI-powered customer support assistant developed for ZentroMart, a fictional Indian e-commerce company.
@@ -24,9 +33,6 @@ The project explores how customer support workflows can be improved by combining
 Customers can communicate with the assistant through text or voice. The application transcribes recorded speech using Gnani Speech-to-Text (STT), retrieves relevant information from company knowledge-base documents, and presents supporting information to the customer. It also includes simulated order lookup with identity verification and a support-ticket handover mechanism.
 
 The project was developed as a practical capstone to understand how voice-enabled customer support systems can work with structured business data and unstructured company documentation.
-
-**Live application:** Run locally using Streamlit.  
-**Source code:** [GitHub Repository](https://github.com/pratyushmishra9920-ship-it/zentromart-voiceops)
 
 ---
 
@@ -99,17 +105,23 @@ The application combines structured data, unstructured knowledge documents, loca
 flowchart TD
     A[Customer] --> B[Streamlit Interface]
     B --> C{Input Type}
+
     C -->|Text| D[Text Query]
     C -->|Voice| E[Gnani Speech-to-Text]
+
     E --> F[Transcribed Text]
     D --> G[Support Processing]
     F --> G
+
     G --> H[Knowledge Base Retrieval]
     H --> I[Markdown Documents]
+
     G --> J[Order Verification Tool]
     J --> K[Synthetic CSV Dataset]
+
     G --> L[Ticket Creation Tool]
     L --> M[Local Ticket Record]
+
     H --> N[Relevant Source Excerpts]
     N --> O[Customer Response]
     O --> P[Optional Gnani Text-to-Speech]
@@ -129,6 +141,7 @@ flowchart TD
 | API communication | Requests |
 | Environment management | Python virtual environment |
 | Version control | Git and GitHub |
+| Deployment | Streamlit Community Cloud |
 
 ---
 
@@ -313,6 +326,46 @@ http://localhost:8501
 
 ---
 
+## Deployment
+
+The ZentroMart VoiceOps application is deployed using **Streamlit Community Cloud** and connected to the project's GitHub repository.
+
+### Live Application
+
+🚀 **[Open ZentroMart VoiceOps](https://zentromart-voiceops-dwd56au4q2qeqnexdeuaxx.streamlit.app/)**
+
+### Deployment Configuration
+
+| Setting | Configuration |
+|---|---|
+| Hosting platform | Streamlit Community Cloud |
+| Source repository | GitHub |
+| Repository | `zentromart-voiceops` |
+| Branch | `main` |
+| Main application file | `app.py` |
+| Python version | 3.11 |
+| Dependencies | `requirements.txt` |
+
+### Environment Secrets
+
+The Gnani API key is configured through Streamlit Community Cloud's **Advanced Settings → Secrets**.
+
+```toml
+GNANI_API_KEY = "your_gnani_api_key"
+```
+
+The actual API key is stored in Streamlit Secrets and is not included in the public GitHub repository.
+
+### Deployment Notes
+
+- The application is connected to the GitHub repository.
+- Updates pushed to the configured branch can be deployed through Streamlit Community Cloud.
+- Voice functionality requires valid Gnani API credentials and internet connectivity.
+- The application uses synthetic capstone data for demonstration purposes.
+- Local ticket records are not guaranteed to persist across hosted application restarts.
+
+---
+
 ## Voice Integration
 
 Voice functionality is implemented using Gnani's Vachana APIs.
@@ -326,13 +379,15 @@ The voice workflow is integrated with the same support-processing and knowledge-
 
 The current implementation uses the documented REST API endpoints. The original capstone dataset describes a WebSocket-based STT and streamed TTS workflow, so the current REST implementation should be considered an implementation variation rather than a claim that the WebSocket requirement has been completed.
 
+Voice functionality has been tested in the local application and the deployed application. However, Gnani STT has experienced intermittent HTTP 504 service timeouts, so availability is not guaranteed.
+
 Voice features require internet connectivity and valid API access. Text-based support and local dataset tools can be tested independently.
 
 ---
 
 ## Testing and Current Implementation Status
 
-The following functionality has been tested in the local application:
+The following functionality has been tested during local development and deployment.
 
 | Feature | Status |
 |---|---|
@@ -342,13 +397,13 @@ The following functionality has been tested in the local application:
 | Voice recording | Tested |
 | Gnani speech transcription | Implemented; intermittent API timeout (HTTP 504) |
 | Recognized speech displayed | Tested when STT succeeds |
-| Knowledge retrieval from voice transcription | Tested when STT succeeds |
+| Knowledge retrieval from voice transcription | Tested; response relevance needs further improvement |
 | Optional spoken response | Tested (REST-based TTS) |
 | Order lookup | Working |
 | Identity verification | Working |
 | Support ticket creation | Working |
 
-These results describe the local capstone demonstration. They do not represent production deployment or real customer authentication.
+These results describe the capstone demonstration. They do not represent production deployment or real customer authentication.
 
 ---
 
@@ -361,6 +416,7 @@ These results describe the local capstone demonstration. They do not represent p
 - Voice functionality depends on Gnani API availability, internet connectivity, and API permissions.
 - API credentials must remain outside the public repository.
 - The application has not been validated for real customer traffic or production security requirements.
+- The deployed application is intended for demonstration and educational purposes.
 
 ---
 
@@ -379,6 +435,7 @@ Through this project, I explored several practical aspects of building an integr
 - Managing environment variables and API credentials.
 - Testing application components independently.
 - Using Git and GitHub to manage a complete project.
+- Deploying a Streamlit application through GitHub.
 
 Most importantly, this project helped me understand that building a useful support assistant involves more than connecting a language or voice API. It also requires reliable data, clear business policies, verification rules, source handling, and a controlled escalation process.
 
@@ -392,9 +449,10 @@ Some areas I would like to explore further:
 - Improve retrieval using semantic embeddings and hybrid search.
 - Add a more structured response-generation layer with stronger source grounding.
 - Improve multilingual handling for Hindi and Hinglish.
+- Improve intent detection for requests such as order tracking and returns.
 - Add analytics for support queries, ticket categories, and resolution patterns.
 - Integrate a persistent ticket database.
-- Deploy the application with secure secret management.
+- Improve hosted application reliability and voice-service error handling.
 - Evaluate retrieval quality using the supplied practice questions and conversations.
 
 ---
@@ -404,7 +462,8 @@ Some areas I would like to explore further:
 **Project:** ZentroMart VoiceOps  
 **Developer:** Pratyush Mishra  
 **GitHub:** [@pratyushmishra9920-ship-it](https://github.com/pratyushmishra9920-ship-it)  
-**Repository:** [zentromart-voiceops](https://github.com/pratyushmishra9920-ship-it/zentromart-voiceops)
+**Repository:** [zentromart-voiceops](https://github.com/pratyushmishra9920-ship-it/zentromart-voiceops)  
+**Live Demo:** [ZentroMart VoiceOps](https://zentromart-voiceops-dwd56au4q2qeqnexdeuaxx.streamlit.app/)
 
 ---
 
